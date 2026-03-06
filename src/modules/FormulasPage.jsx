@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { Search, Plus, Trash2, X, Copy, Download, Wand2, Code2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Plus, Trash2, X, Copy, Download, Wand2, Code2, Pencil } from 'lucide-react'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import { formulaCategories } from '../data/formulas'
@@ -39,12 +39,12 @@ const VISUAL_BLOCKS = [
   {
     group: 'Structure',
     blocks: [
-      { label: '÷',  desc: 'Fraction',    build: () => ({ expr: '\\frac{□}{□}',          slots: ['Numerator', 'Denominator'] }) },
-      { label: '√',  desc: 'Square root', build: () => ({ expr: '\\sqrt{□}',              slots: ['Expression'] }) },
-      { label: 'xⁿ', desc: 'Power',       build: () => ({ expr: '□^{□}',                 slots: ['Base', 'Exponent'] }) },
-      { label: 'xₙ', desc: 'Subscript',   build: () => ({ expr: '□_{□}',                 slots: ['Symbol', 'Subscript'] }) },
-      { label: '( )',desc: 'Brackets',    build: () => ({ expr: '\\left(□\\right)',        slots: ['Expression'] }) },
-      { label: '∑',  desc: 'Sum',         build: () => ({ expr: '\\sum_{□}^{□} □',        slots: ['From', 'To', 'Expression'] }) },
+      { label: '÷',  desc: 'Fraction',    build: () => ({ expr: '\\frac{□}{□}',       slots: ['Numerator', 'Denominator'] }) },
+      { label: '√',  desc: 'Square root', build: () => ({ expr: '\\sqrt{□}',           slots: ['Expression'] }) },
+      { label: 'xⁿ', desc: 'Power',       build: () => ({ expr: '□^{□}',              slots: ['Base', 'Exponent'] }) },
+      { label: 'xₙ', desc: 'Subscript',   build: () => ({ expr: '□_{□}',              slots: ['Symbol', 'Subscript'] }) },
+      { label: '( )',desc: 'Brackets',    build: () => ({ expr: '\\left(□\\right)',    slots: ['Expression'] }) },
+      { label: '∑',  desc: 'Sum',         build: () => ({ expr: '\\sum_{□}^{□} □',    slots: ['From', 'To', 'Expression'] }) },
     ]
   },
   {
@@ -159,16 +159,18 @@ function loadCustom() {
   catch { return [] }
 }
 
-function AddFormulaModal({ onSave, onClose }) {
-  const [title, setTitle] = useState('')
-  const [expr, setExpr] = useState('')
-  const [vars, setVars] = useState('')
-  const [varsLatex, setVarsLatex] = useState(false)
-  const [category, setCategory] = useState('Custom')
+// editing prop: if set, modal is in edit mode and pre-populated
+function AddFormulaModal({ onSave, onClose, editing = null }) {
+  const [title, setTitle] = useState(editing?.title || '')
+  const [expr, setExpr] = useState(editing?.expr || '')
+  const [vars, setVars] = useState(editing?.vars || '')
+  const [varsLatex, setVarsLatex] = useState(editing?.varsLatex || false)
+  const [category, setCategory] = useState(editing?.category || 'Custom')
   const [mode, setMode] = useState('visual')
 
   const categories = [...formulaCategories.map(c => c.label), 'Custom']
   const canSave = title.trim() && expr.trim()
+  const isEditing = !!editing
 
   const insertSnippet = (snippet) => {
     const ta = document.getElementById('latex-input')
@@ -195,7 +197,9 @@ function AddFormulaModal({ onSave, onClose }) {
       <div style={{ width: '100%', maxWidth: '480px', background: 'var(--bg-light)', borderRadius: '20px 20px 0 0', border: '1px solid var(--border)', display: 'flex', flexDirection: 'column', maxHeight: '92vh', overflow: 'hidden' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 16px 12px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text)' }}>Add Formula</h3>
+          <h3 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text)' }}>
+            {isEditing ? 'Edit Formula' : 'Add Formula'}
+          </h3>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', padding: '4px' }}>
             <X size={18} />
           </button>
@@ -267,7 +271,7 @@ function AddFormulaModal({ onSave, onClose }) {
               </button>
             </div>
             <textarea value={vars} onChange={e => setVars(e.target.value)}
-                      placeholder={varsLatex ? 'e.g. V_1 = primary\\ voltage,\\ N = turns' : 'e.g. V1 = primary voltage, N = turns'}
+                      placeholder={varsLatex ? 'e.g. V_1 = primary\\ voltage' : 'e.g. V1 = primary voltage'}
                       rows={2}
                       style={{ ...inputStyle, resize: 'none', fontFamily: varsLatex ? 'monospace' : "'Barlow', sans-serif", fontSize: '13px' }} />
             {varsLatex && vars && (
@@ -281,7 +285,7 @@ function AddFormulaModal({ onSave, onClose }) {
         <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)', flexShrink: 0 }}>
           <button onClick={() => canSave && onSave({ title: title.trim(), expr, vars, varsLatex, category })}
                   style={{ width: '100%', padding: '12px', borderRadius: '10px', border: 'none', background: canSave ? 'var(--amber)' : 'var(--bg-mid)', color: canSave ? 'var(--bg)' : 'var(--text-faint)', fontWeight: 700, fontSize: '14px', cursor: canSave ? 'pointer' : 'default', transition: 'background 0.15s' }}>
-            Save Formula
+            {isEditing ? 'Save Changes' : 'Save Formula'}
           </button>
         </div>
       </div>
@@ -289,7 +293,7 @@ function AddFormulaModal({ onSave, onClose }) {
   )
 }
 
-function FormulaCard({ formula: f, onDelete }) {
+function FormulaCard({ formula: f, onDelete, onEdit }) {
   const [copied, setCopied] = useState(false)
 
   const copyLatex = async () => {
@@ -322,6 +326,12 @@ function FormulaCard({ formula: f, onDelete }) {
                   style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--text-faint)' }}>
             <Download size={12} />
           </button>
+          {onEdit && (
+            <button onClick={() => onEdit(f)} title="Edit"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--text-faint)' }}>
+              <Pencil size={12} />
+            </button>
+          )}
           {onDelete && (
             <button onClick={() => onDelete(f.id)} title="Delete"
                     style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '2px', color: 'var(--text-faint)' }}>
@@ -354,6 +364,7 @@ export function FormulasPage() {
   const [search, setSearch] = useState('')
   const [activeCat, setActiveCat] = useState('all')
   const [showAdd, setShowAdd] = useState(false)
+  const [editingFormula, setEditingFormula] = useState(null)
   const [customFormulas, setCustomFormulas] = useState(loadCustom)
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(customFormulas)) }, [customFormulas])
@@ -361,6 +372,11 @@ export function FormulasPage() {
   const saveFormula = (data) => {
     setCustomFormulas(prev => [...prev, { id: Date.now(), ...data, createdAt: new Date().toISOString() }])
     setShowAdd(false)
+  }
+
+  const saveEdit = (data) => {
+    setCustomFormulas(prev => prev.map(f => f.id === editingFormula.id ? { ...f, ...data } : f))
+    setEditingFormula(null)
   }
 
   const deleteFormula = (id) => setCustomFormulas(prev => prev.filter(f => f.id !== id))
@@ -440,14 +456,24 @@ export function FormulasPage() {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
               {cat.formulas.map(f => (
-                <FormulaCard key={f.id || f.title} formula={f} onDelete={!f.isBuiltIn ? deleteFormula : null} />
+                <FormulaCard
+                  key={f.id || f.title}
+                  formula={f}
+                  onDelete={!f.isBuiltIn ? deleteFormula : null}
+                  onEdit={!f.isBuiltIn ? setEditingFormula : null}
+                />
               ))}
             </div>
           </div>
         ))}
       </div>
 
-      {showAdd && <AddFormulaModal onSave={saveFormula} onClose={() => setShowAdd(false)} />}
+      {showAdd && (
+        <AddFormulaModal onSave={saveFormula} onClose={() => setShowAdd(false)} />
+      )}
+      {editingFormula && (
+        <AddFormulaModal onSave={saveEdit} onClose={() => setEditingFormula(null)} editing={editingFormula} />
+      )}
     </div>
   )
 }
