@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Barlow:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* ── Dark theme (default) ── */
+:root, [data-theme="dark"] {
+  --bg:         #0f172a;
+  --bg-light:   #1e293b;
+  --bg-mid:     #334155;
+  --border:     #334155;
+  --slate:      #64748b;
+  --amber:      #f59e0b;
+  --amber-light:#fcd34d;
+  --text:       #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-faint: #64748b;
+  --input-bg:   #0f172a;
+}
+
+/* ── Light theme ── */
+[data-theme="light"] {
+  --bg:         #f8fafc;
+  --bg-light:   #ffffff;
+  --bg-mid:     #e2e8f0;
+  --border:     #cbd5e1;
+  --slate:      #64748b;
+  --amber:      #d97706;
+  --amber-light:#f59e0b;
+  --text:       #0f172a;
+  --text-muted: #475569;
+  --text-faint: #94a3b8;
+  --input-bg:   #f1f5f9;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Barlow', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.2s, color 0.2s;
+}
+
+body { overscroll-behavior: none; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 2px; }
+
+/*
+  iOS PWA safe area strategy:
+  - Top: pad the StatusBar component directly via padding-top on its element
+  - Bottom: pad the BottomNav directly via padding-bottom on its element
+  - We do NOT pad #root — that causes height recalculation bugs when switching tabs
+  - 100dvh (dynamic viewport height) is used so the layout fills exactly the
+    visible screen on iOS, accounting for the browser chrome correctly
+*/
+#root {
+  height: 100dvh; /* dvh adjusts for iOS toolbar show/hide; more reliable than 100% */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
