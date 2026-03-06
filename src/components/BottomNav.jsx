@@ -1,11 +1,12 @@
 import { NavLink } from 'react-router-dom'
-import { Calculator, FileText, Calendar, BookOpen } from 'lucide-react'
+import { Calculator, FileText, Calendar, BookOpen, Settings } from 'lucide-react'
 
 const tabs = [
   { to: '/tools',    icon: Calculator, label: 'Tools'    },
   { to: '/notes',    icon: FileText,   label: 'Notes'    },
   { to: '/schedule', icon: Calendar,   label: 'Schedule' },
   { to: '/formulas', icon: BookOpen,   label: 'Formulas' },
+  { to: '/settings', icon: Settings,   label: 'Settings' },
 ]
 
 export function BottomNav() {
@@ -14,8 +15,7 @@ export function BottomNav() {
          style={{
            background: 'var(--bg-light)',
            borderTop: '1px solid var(--border)',
-           paddingBottom: '20px',  /* fixed space for home indicator */
-           flexShrink: 0,          /* never shrink no matter what */
+           paddingBottom: 'env(safe-area-inset-bottom)',
          }}>
       {tabs.map(({ to, icon: Icon, label }) => (
         <NavLink
@@ -28,8 +28,8 @@ export function BottomNav() {
         >
           {({ isActive }) => (
             <>
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
-              <span>{label}</span>
+              <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
+              <span style={{ fontSize: '10px' }}>{label}</span>
             </>
           )}
         </NavLink>
