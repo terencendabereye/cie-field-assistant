@@ -11,15 +11,11 @@ const tabs = [
 
 export function BottomNav() {
   return (
-    <nav style={{
+    <nav className="flex items-stretch"
+         style={{
            background: 'var(--bg-light)',
            borderTop: '1px solid var(--border)',
-           // Bottom safe area handled here — pads buttons above home indicator
-           // The background naturally extends to the screen edge behind it
-           paddingBottom: 'env(safe-area-inset-bottom)',
-           flexShrink: 0, // critical — prevents nav from shrinking when tab content changes
-         }}
-         className="flex items-stretch">
+         }}>
       {tabs.map(({ to, icon: Icon, label }) => (
         <NavLink
           key={to}
