@@ -41,7 +41,6 @@ export function NotesPage() {
     return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
   }
 
-  // Note editor view
   if (activeNote) {
     return (
       <div className="flex flex-col h-full">
@@ -71,7 +70,6 @@ export function NotesPage() {
     )
   }
 
-  // Notes list view
   return (
     <div className="flex flex-col h-full">
       <div className="flex items-center justify-between px-4 py-3"
@@ -83,7 +81,6 @@ export function NotesPage() {
           <Plus size={13} /> New Note
         </button>
       </div>
-
       <div className="flex-1 overflow-y-auto">
         {notes.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-3 text-slate-500">

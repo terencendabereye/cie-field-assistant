@@ -12,7 +12,6 @@ export function ToolsPage() {
 
   return (
     <div className="flex flex-col h-full">
-      {/* Sub-tabs */}
       <div className="flex border-b" style={{ borderColor: 'var(--border)', background: 'var(--bg-light)' }}>
         {toolTabs.map(({ to, icon: Icon, label }) => (
           <NavLink
@@ -28,8 +27,6 @@ export function ToolsPage() {
           </NavLink>
         ))}
       </div>
-
-      {/* Tool content */}
       <div className="flex-1 overflow-y-auto">
         {isRoot ? (
           <div className="flex items-center justify-center h-full text-slate-500 text-sm">

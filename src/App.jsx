@@ -7,7 +7,6 @@ import { UnitConverter } from './modules/tools/UnitConverter'
 import { NotesPage } from './modules/notes/NotesPage'
 import { SchedulePage } from './modules/schedule/SchedulePage'
 import { FormulasPage } from './modules/FormulasPage'
-import { SettingsPage } from './modules/settings/SettingsPage'
 
 export default function App() {
   return (
@@ -24,7 +23,6 @@ export default function App() {
             <Route path="/notes"    element={<NotesPage />} />
             <Route path="/schedule" element={<SchedulePage />} />
             <Route path="/formulas" element={<FormulasPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
         <BottomNav />

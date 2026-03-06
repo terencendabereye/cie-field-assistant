@@ -61,25 +61,22 @@ export function SchedulePage() {
         </div>
         <button onClick={() => setShowForm(s => !s)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold"
-                style={{ background: showForm ? 'var(--border)' : 'var(--amber)', color: showForm ? 'var(--text)' : 'var(--bg)' }}>
+                style={{ background: showForm ? 'var(--bg-mid)' : 'var(--amber)', color: showForm ? 'var(--text)' : 'var(--bg)' }}>
           <Plus size={13} /> {showForm ? 'Cancel' : 'Add Task'}
         </button>
       </div>
 
-      {/* Add task form */}
       {showForm && (
         <div className="p-4 flex flex-col gap-3"
              style={{ background: 'var(--bg-light)', borderBottom: '1px solid var(--border)' }}>
           <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
                  placeholder="Task title *" style={inputStyle} />
-
           <div className="grid grid-cols-2 gap-2">
             <input type="date" value={form.date} onChange={e => setForm({ ...form, date: e.target.value })}
                    style={{ ...inputStyle, colorScheme: 'dark' }} />
             <input type="time" value={form.time} onChange={e => setForm({ ...form, time: e.target.value })}
                    style={{ ...inputStyle, colorScheme: 'dark' }} />
           </div>
-
           <div className="grid grid-cols-2 gap-2">
             <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value })} style={inputStyle}>
               {PRIORITIES.map(p => <option key={p.id} value={p.id}>{p.label} Priority</option>)}
@@ -88,11 +85,9 @@ export function SchedulePage() {
               {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           </div>
-
           <textarea value={form.notes} onChange={e => setForm({ ...form, notes: e.target.value })}
                     placeholder="Notes (optional)" rows={2}
                     style={{ ...inputStyle, resize: 'none', fontFamily: "'Barlow', sans-serif" }} />
-
           <button onClick={addTask}
                   className="w-full py-2 rounded font-semibold text-sm"
                   style={{ background: 'var(--amber)', color: 'var(--bg)' }}>
@@ -101,7 +96,6 @@ export function SchedulePage() {
         </div>
       )}
 
-      {/* Task list */}
       <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-2">
         {sorted.length === 0 ? (
           <div className="flex items-center justify-center h-full text-slate-500 text-sm">
@@ -112,11 +106,7 @@ export function SchedulePage() {
           return (
             <div key={task.id}
                  className="rounded-lg p-3 flex gap-3"
-                 style={{
-                   background: 'var(--bg-light)',
-                   border: `1px solid var(--border)`,
-                   opacity: task.done ? 0.5 : 1,
-                 }}>
+                 style={{ background: 'var(--bg-light)', border: '1px solid var(--border)', opacity: task.done ? 0.5 : 1 }}>
               <button onClick={() => toggle(task.id)} className="mt-0.5 shrink-0">
                 {task.done
                   ? <CheckCircle2 size={18} className="text-emerald-400" />
@@ -129,17 +119,14 @@ export function SchedulePage() {
                 <div className="flex items-center gap-2 mt-1 flex-wrap">
                   {(task.date || task.time) && (
                     <span className="flex items-center gap-1 text-xs text-slate-500">
-                      <Clock size={10} />
-                      {task.date} {task.time}
+                      <Clock size={10} /> {task.date} {task.time}
                     </span>
                   )}
                   <span className="text-xs px-1.5 py-0.5 rounded-full"
                         style={{ background: priority.color + '22', color: priority.color }}>
                     {task.category}
                   </span>
-                  <span className="text-xs" style={{ color: priority.color }}>
-                    {priority.label}
-                  </span>
+                  <span className="text-xs" style={{ color: priority.color }}>{priority.label}</span>
                 </div>
                 {task.notes && <p className="text-xs text-slate-500 mt-1">{task.notes}</p>}
               </div>
