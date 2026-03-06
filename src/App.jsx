@@ -12,7 +12,7 @@ import { SettingsPage } from './modules/settings/SettingsPage'
 export default function App() {
   return (
     <HashRouter>
-      <div className="flex flex-col h-full" style={{ maxWidth: '480px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, maxWidth: '480px', margin: '0 auto' }}>
         <StatusBar />
         <main className="flex-1 overflow-hidden">
           <Routes>
