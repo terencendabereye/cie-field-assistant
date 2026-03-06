@@ -12,9 +12,32 @@ import { SettingsPage } from './modules/settings/SettingsPage'
 export default function App() {
   return (
     <HashRouter>
-      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '480px', margin: '0 auto' }}>
+      {/*
+        This div is the entire app shell.
+        width: 100vw + overflow hidden = nothing can ever make it wider than the screen.
+        height: 100% fills the fixed #root exactly.
+        No content inside any tab can affect these dimensions.
+      */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100vw',
+        maxWidth: '480px',
+        height: '100%',
+        margin: '0 auto',
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
         <StatusBar />
-        <main style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+
+        <main style={{
+          flex: 1,
+          minHeight: 0,    /* prevents content from expanding this beyond its flex allocation */
+          minWidth: 0,     /* prevents content from expanding this horizontally */
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}>
           <Routes>
             <Route path="/" element={<Navigate to="/tools/interpolation" replace />} />
             <Route path="/tools" element={<ToolsPage />}>
@@ -27,6 +50,7 @@ export default function App() {
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
+
         <BottomNav />
       </div>
     </HashRouter>

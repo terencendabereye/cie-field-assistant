@@ -31,21 +31,31 @@
   --input-bg:   #f1f5f9;
 }
 
-* { box-sizing: border-box; }
-
-html, body {
+*, *::before, *::after {
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+html {
+  /* Lock the viewport — nothing can ever make html wider or taller */
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   background: var(--bg);
   color: var(--text);
   font-family: 'Barlow', sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background 0.2s, color 0.2s;
-  min-height: 100%;
-  min-height: -webkit-fill-available;
+  overscroll-behavior: none;
 }
 
-body { overscroll-behavior: none; }
 .mono { font-family: 'JetBrains Mono', monospace; }
 
 ::-webkit-scrollbar { width: 4px; }
@@ -53,8 +63,12 @@ body { overscroll-behavior: none; }
 ::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 2px; }
 
 #root {
+  /* Pinned to exact screen edges — nothing inside can push this */
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
