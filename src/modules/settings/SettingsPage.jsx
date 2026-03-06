@@ -112,20 +112,18 @@ export function SettingsPage() {
         {/* Text Size */}
         <Section title="Text Size">
           <Row icon={Type} label="Font Size" last>
-            <div className="flex gap-1.5">
-              {Object.entries(sizes).map(([key, val]) => (
-                <button
-                  key={key}
-                  onClick={() => setSize(key)}
-                  className="px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors"
-                  style={{
-                    background: size === key ? 'var(--amber)' : 'var(--bg-mid)',
-                    color: size === key ? 'var(--bg)' : 'var(--text-muted)',
-                  }}
-                >
-                  {val.label}
-                </button>
-              ))}
+            <div className="flex items-center gap-2">
+              <span className="text-xs mono" style={{ color: 'var(--text-faint)' }}>A</span>
+              <input
+                type="range"
+                min={12}
+                max={22}
+                value={size}
+                onChange={e => setSize(parseInt(e.target.value))}
+                style={{ width: '120px', accentColor: 'var(--amber)' }}
+              />
+              <span className="text-base mono font-bold" style={{ color: 'var(--text-faint)' }}>A</span>
+              <span className="mono text-xs" style={{ color: 'var(--amber)', minWidth: '32px' }}>{size}px</span>
             </div>
           </Row>
         </Section>

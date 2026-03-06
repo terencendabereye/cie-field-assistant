@@ -2,23 +2,23 @@ import { createContext, useContext, useEffect, useState } from 'react'
 
 const FontSizeContext = createContext()
 
-const SIZES = {
-  small:  { label: 'Small',  scale: '14px' },
-  medium: { label: 'Medium', scale: '16px' },
-  large:  { label: 'Large',  scale: '18px' },
-}
+const MIN = 12
+const MAX = 22
+const DEFAULT = 16
 
 export function FontSizeProvider({ children }) {
-  const [size, setSize] = useState(() => localStorage.getItem('cie_fontsize') || 'medium')
+  const [size, setSize] = useState(() => {
+    const saved = parseInt(localStorage.getItem('cie_fontsize'))
+    return isNaN(saved) ? DEFAULT : saved
+  })
 
   useEffect(() => {
     localStorage.setItem('cie_fontsize', size)
-    // Apply font size to root so all rem/em units scale with it
-    document.documentElement.style.fontSize = SIZES[size].scale
+    document.documentElement.style.fontSize = size + 'px'
   }, [size])
 
   return (
-    <FontSizeContext.Provider value={{ size, setSize, sizes: SIZES }}>
+    <FontSizeContext.Provider value={{ size, setSize, min: MIN, max: MAX }}>
       {children}
     </FontSizeContext.Provider>
   )

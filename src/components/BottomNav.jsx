@@ -21,14 +21,14 @@ export function BottomNav() {
         <NavLink
           key={to}
           to={to}
-          className="flex-1 flex flex-col items-center justify-center py-3 gap-1 text-xs font-medium transition-colors"
+          className="flex-1 flex flex-col items-center justify-center py-2 gap-1 text-xs font-medium transition-colors"
           style={({ isActive }) => ({
             color: isActive ? 'var(--amber)' : 'var(--text-faint)',
           })}
         >
           {({ isActive }) => (
             <>
-              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+              <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
               <span>{label}</span>
             </>
           )}
