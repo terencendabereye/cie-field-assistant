@@ -9,11 +9,17 @@ export function StatusBar() {
   const { dark, toggle } = useTheme()
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 text-xs"
-         style={{ background: 'var(--bg-light)', borderBottom: '1px solid var(--border)' }}>
+    <div className="flex items-center justify-between px-4 text-xs"
+         style={{
+           background: 'var(--bg-light)',
+           borderBottom: '1px solid var(--border)',
+           paddingTop: '52px',   /* fixed space for Dynamic Island / notch */
+           paddingBottom: '10px',
+           flexShrink: 0,
+         }}>
 
-      <span className="mono font-bold tracking-widest text-xs uppercase"
-            style={{ color: 'var(--amber)' }}>
+      <span className="mono font-bold tracking-widest uppercase"
+            style={{ color: 'var(--amber)', fontSize: '15px' }}>
         CIE Assist
       </span>
 

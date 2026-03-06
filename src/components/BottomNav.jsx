@@ -14,7 +14,8 @@ export function BottomNav() {
          style={{
            background: 'var(--bg-light)',
            borderTop: '1px solid var(--border)',
-           paddingBottom: 'env(safe-area-inset-bottom)',
+           paddingBottom: '20px',  /* fixed space for home indicator */
+           flexShrink: 0,          /* never shrink no matter what */
          }}>
       {tabs.map(({ to, icon: Icon, label }) => (
         <NavLink
