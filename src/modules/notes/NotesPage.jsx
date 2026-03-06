@@ -22,8 +22,7 @@ export function NotesPage() {
 
   const createNote = () => {
     const note = { id: Date.now(), title: 'New Note', body: '', createdAt: new Date().toISOString() }
-    const updated = [note, ...notes]
-    setNotes(updated)
+    setNotes([note, ...notes])
     setActiveId(note.id)
   }
 
@@ -38,33 +37,30 @@ export function NotesPage() {
 
   const formatDate = (iso) => {
     const d = new Date(iso)
-    return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' })
+    return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
   }
 
   if (activeNote) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-        <div className="flex items-center gap-3 px-4 py-3"
-             style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-light)', flexShrink: 0 }}>
-          <button onClick={() => setActiveId(null)} className="text-slate-400 hover:text-slate-200">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg-light)', flexShrink: 0 }}>
+          <button onClick={() => setActiveId(null)} style={{ color: 'var(--text-muted)' }}>
             <ChevronLeft size={20} />
           </button>
           <input
             value={activeNote.title}
             onChange={e => updateNote('title', e.target.value)}
-            className="flex-1 bg-transparent outline-none font-semibold text-sm"
-            style={{ color: 'var(--text)' }}
+            style={{ flex: 1, background: 'transparent', border: 'none', outline: 'none', fontWeight: 600, fontSize: '14px', color: 'var(--text)' }}
             placeholder="Note title"
           />
-          <button onClick={() => deleteNote(activeNote.id)} className="text-red-400 hover:text-red-300 p-1">
+          <button onClick={() => deleteNote(activeNote.id)} style={{ color: '#ef4444', padding: '4px' }}>
             <Trash2 size={16} />
           </button>
         </div>
         <textarea
           value={activeNote.body}
           onChange={e => updateNote('body', e.target.value)}
-          className="p-4 outline-none text-sm resize-none leading-relaxed"
-          style={{ flex: 1, minHeight: 0, background: 'var(--bg)', color: 'var(--text-muted)', fontFamily: "'Barlow', sans-serif" }}
+          style={{ flex: 1, minHeight: 0, padding: '16px', background: 'var(--bg)', color: 'var(--text-muted)', border: 'none', outline: 'none', resize: 'none', fontSize: '14px', lineHeight: 1.6, fontFamily: "'Barlow', sans-serif" }}
           placeholder="Start typing your note…"
         />
       </div>
@@ -73,43 +69,39 @@ export function NotesPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-      <div className="flex items-center justify-between px-4 py-3"
-           style={{ borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
-        <h2 className="text-base font-semibold" style={{ color: 'var(--text)' }}>Notes</h2>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid var(--border)', flexShrink: 0 }}>
+        <h2 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: 'var(--text)' }}>Notes</h2>
         <button onClick={createNote}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-semibold"
-                style={{ background: 'var(--amber)', color: 'var(--bg)' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 12px', borderRadius: '6px', background: 'var(--amber)', color: 'var(--bg)', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
           <Plus size={13} /> New Note
         </button>
       </div>
 
+      {/* flex: 1 + minHeight: 0 makes this always fill remaining space exactly */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
         {notes.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-3"
-               style={{ color: 'var(--text-faint)' }}>
-            <p className="text-sm">No notes yet</p>
+          <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', color: 'var(--text-faint)' }}>
+            <p style={{ margin: 0, fontSize: '14px' }}>No notes yet</p>
             <button onClick={createNote}
-                    className="text-xs px-4 py-2 rounded"
-                    style={{ background: 'var(--bg-light)', border: '1px solid var(--border)', color: 'var(--amber)' }}>
+                    style={{ fontSize: '12px', padding: '8px 16px', borderRadius: '6px', background: 'var(--bg-light)', border: '1px solid var(--border)', color: 'var(--amber)', cursor: 'pointer' }}>
               Create your first note
             </button>
           </div>
         ) : (
-          <div className="p-3 flex flex-col gap-2">
+          <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {notes.map(note => (
               <button key={note.id} onClick={() => setActiveId(note.id)}
-                      className="w-full text-left rounded-lg p-3"
-                      style={{ background: 'var(--bg-light)', border: '1px solid var(--border)' }}>
-                <div className="flex items-start justify-between">
-                  <p className="text-sm font-medium truncate flex-1" style={{ color: 'var(--text)' }}>
+                      style={{ width: '100%', textAlign: 'left', borderRadius: '8px', padding: '12px', background: 'var(--bg-light)', border: '1px solid var(--border)', cursor: 'pointer' }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                  <p style={{ margin: 0, fontSize: '14px', fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
                     {note.title || 'Untitled'}
                   </p>
-                  <span className="text-xs ml-2 shrink-0" style={{ color: 'var(--text-faint)' }}>
+                  <span style={{ fontSize: '11px', color: 'var(--text-faint)', marginLeft: '8px', flexShrink: 0 }}>
                     {formatDate(note.createdAt)}
                   </span>
                 </div>
                 {note.body && (
-                  <p className="text-xs mt-1 line-clamp-2 leading-relaxed" style={{ color: 'var(--text-faint)' }}>
+                  <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--text-faint)', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                     {note.body}
                   </p>
                 )}

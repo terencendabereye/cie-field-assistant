@@ -29,10 +29,10 @@ export function ToolsPage() {
         ))}
       </div>
 
-      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
+      {/* Always fills remaining height whether empty or has content */}
+      <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {isRoot ? (
-          <div className="flex items-center justify-center h-full text-sm"
-               style={{ color: 'var(--text-faint)' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--text-faint)', fontSize: '14px' }}>
             Select a tool above
           </div>
         ) : (
