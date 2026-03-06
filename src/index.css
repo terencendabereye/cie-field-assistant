@@ -50,8 +50,3 @@ body { overscroll-behavior: none; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 2px; }
-
-#root {
-  display: flex;
-  flex-direction: column;
-}
