@@ -28,8 +28,8 @@ export function BottomNav() {
         >
           {({ isActive }) => (
             <>
-              <Icon size={18} strokeWidth={isActive ? 2.5 : 1.5} />
-              <span style={{ fontSize: '10px' }}>{label}</span>
+              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.5} />
+              <span>{label}</span>
             </>
           )}
         </NavLink>
