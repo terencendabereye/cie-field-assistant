@@ -12,9 +12,9 @@ import { SettingsPage } from './modules/settings/SettingsPage'
 export default function App() {
   return (
     <HashRouter>
-      <div className="flex flex-col h-full" style={{ maxWidth: '480px', margin: '0 auto' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', height: '100%', maxWidth: '480px', margin: '0 auto' }}>
         <StatusBar />
-        <main className="flex-1 overflow-hidden">
+        <main style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <Routes>
             <Route path="/" element={<Navigate to="/tools/interpolation" replace />} />
             <Route path="/tools" element={<ToolsPage />}>

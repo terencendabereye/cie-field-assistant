@@ -34,7 +34,6 @@
 * { box-sizing: border-box; }
 
 html, body {
-  height: 100%;
   margin: 0;
   padding: 0;
   background: var(--bg);
@@ -42,6 +41,8 @@ html, body {
   font-family: 'Barlow', sans-serif;
   -webkit-font-smoothing: antialiased;
   transition: background 0.2s, color 0.2s;
+  min-height: 100%;
+  min-height: -webkit-fill-available;
 }
 
 body { overscroll-behavior: none; }
@@ -51,17 +52,11 @@ body { overscroll-behavior: none; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 2px; }
 
-/*
-  iOS PWA safe area strategy:
-  - Top: pad the StatusBar component directly via padding-top on its element
-  - Bottom: pad the BottomNav directly via padding-bottom on its element
-  - We do NOT pad #root — that causes height recalculation bugs when switching tabs
-  - 100dvh (dynamic viewport height) is used so the layout fills exactly the
-    visible screen on iOS, accounting for the browser chrome correctly
-*/
 #root {
-  height: 100dvh; /* dvh adjusts for iOS toolbar show/hide; more reliable than 100% */
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background: var(--bg);
 }
