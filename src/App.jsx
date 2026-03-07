@@ -7,12 +7,12 @@ import { UnitConverter } from './modules/tools/UnitConverter'
 import { NotesPage } from './modules/notes/NotesPage'
 import { SchedulePage } from './modules/schedule/SchedulePage'
 import { FormulasPage } from './modules/FormulasPage'
-import { SettingsPage } from './modules/settings/SettingsPage'
+import { CalibrationPage } from './modules/calibration/CalibrationPage'
 
 export default function App() {
   return (
     <HashRouter>
-      <div style={{ display: 'flex', flexDirection: 'column', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, maxWidth: '480px', margin: '0 auto' }}>
+      <div className="flex flex-col h-full" style={{ maxWidth: '480px', margin: '0 auto' }}>
         <StatusBar />
         <main className="flex-1 overflow-hidden">
           <Routes>
@@ -21,10 +21,10 @@ export default function App() {
               <Route path="interpolation" element={<InterpolationTool />} />
               <Route path="units"         element={<UnitConverter />} />
             </Route>
-            <Route path="/notes"    element={<NotesPage />} />
-            <Route path="/schedule" element={<SchedulePage />} />
-            <Route path="/formulas" element={<FormulasPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/notes"       element={<NotesPage />} />
+            <Route path="/schedule"    element={<SchedulePage />} />
+            <Route path="/formulas"    element={<FormulasPage />} />
+            <Route path="/calibration" element={<CalibrationPage />} />
           </Routes>
         </main>
         <BottomNav />
