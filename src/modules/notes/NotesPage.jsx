@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
-import { Plus, Trash2, ChevronLeft, Eye, Edit3, Image, X, AlertTriangle } from 'lucide-react'
+import { Plus, Trash2, ChevronLeft, Eye, Edit3, Image, X, AlertTriangle,
+         Bold, Italic, Heading1, Heading2, List, ListOrdered, Quote, Code, Minus } from 'lucide-react'
 import { marked } from 'marked'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
@@ -31,6 +32,116 @@ function MarkdownPreview({ content }) {
     <div className="md-preview"
          style={{ color: 'var(--text)', fontSize: '14px', lineHeight: 1.7 }}
          dangerouslySetInnerHTML={{ __html: html }} />
+  )
+}
+
+// Applies markdown formatting to the textarea, wrapping selection or inserting at cursor
+function applyFormat(textareaId, body, onChange, type) {
+  const ta = document.getElementById(textareaId)
+  if (!ta) return
+  const start = ta.selectionStart
+  const end = ta.selectionEnd
+  const selected = body.slice(start, end)
+  const before = body.slice(0, start)
+  const after = body.slice(end)
+
+  let insert = ''
+  let newCursorOffset = 0
+
+  switch (type) {
+    case 'bold':
+      insert = `**${selected || 'bold text'}**`
+      newCursorOffset = selected ? insert.length : 2
+      break
+    case 'italic':
+      insert = `*${selected || 'italic text'}*`
+      newCursorOffset = selected ? insert.length : 1
+      break
+    case 'h1':
+      insert = `\n# ${selected || 'Heading 1'}\n`
+      newCursorOffset = insert.length
+      break
+    case 'h2':
+      insert = `\n## ${selected || 'Heading 2'}\n`
+      newCursorOffset = insert.length
+      break
+    case 'ul': {
+      const lines = (selected || 'List item').split('\n')
+      insert = '\n' + lines.map(l => `- ${l}`).join('\n') + '\n'
+      newCursorOffset = insert.length
+      break
+    }
+    case 'ol': {
+      const lines = (selected || 'List item').split('\n')
+      insert = '\n' + lines.map((l, i) => `${i + 1}. ${l}`).join('\n') + '\n'
+      newCursorOffset = insert.length
+      break
+    }
+    case 'quote':
+      insert = `\n> ${selected || 'quoted text'}\n`
+      newCursorOffset = insert.length
+      break
+    case 'code':
+      if (selected?.includes('\n')) {
+        insert = `\n\`\`\`\n${selected}\n\`\`\`\n`
+      } else {
+        insert = `\`${selected || 'code'}\``
+      }
+      newCursorOffset = selected ? insert.length : 1
+      break
+    case 'hr':
+      insert = `\n---\n`
+      newCursorOffset = insert.length
+      break
+    default:
+      return
+  }
+
+  const newBody = before + insert + after
+  onChange(newBody)
+  setTimeout(() => {
+    ta.focus()
+    const pos = start + newCursorOffset
+    ta.setSelectionRange(pos, pos)
+  }, 10)
+}
+
+function FormatToolbar({ bodyId, body, onChange }) {
+  const btn = (icon, type, title) => (
+    <button
+      key={type}
+      onMouseDown={e => { e.preventDefault(); applyFormat(bodyId, body, onChange, type) }}
+      title={title}
+      style={{
+        background: 'none', border: 'none', cursor: 'pointer',
+        padding: '5px 7px', borderRadius: '5px', color: 'var(--text-muted)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        fontSize: '11px', fontWeight: 700,
+      }}
+    >
+      {icon}
+    </button>
+  )
+
+  return (
+    <div style={{
+      flexShrink: 0,
+      display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '2px',
+      padding: '4px 10px', background: 'var(--bg-light)', borderBottom: '1px solid var(--border)',
+    }}>
+      {btn(<Bold size={13} />, 'bold', 'Bold')}
+      {btn(<Italic size={13} />, 'italic', 'Italic')}
+      <div style={{ width: '1px', height: '16px', background: 'var(--border)', margin: '0 3px' }} />
+      {btn(<Heading1 size={13} />, 'h1', 'Heading 1')}
+      {btn(<Heading2 size={13} />, 'h2', 'Heading 2')}
+      <div style={{ width: '1px', height: '16px', background: 'var(--border)', margin: '0 3px' }} />
+      {btn(<List size={13} />, 'ul', 'Bullet list')}
+      {btn(<ListOrdered size={13} />, 'ol', 'Numbered list')}
+      <div style={{ width: '1px', height: '16px', background: 'var(--border)', margin: '0 3px' }} />
+      {btn(<Quote size={13} />, 'quote', 'Block quote')}
+      {btn(<Code size={13} />, 'code', 'Code')}
+      {btn(<Minus size={13} />, 'hr', 'Divider')}
+    </div>
   )
 }
 
@@ -68,6 +179,7 @@ export function NotesPage() {
   useEffect(() => saveNotes(notes), [notes])
 
   const active = notes.find(n => n.id === activeId)
+  const bodyId = `note-body-${activeId}`
 
   const createNote = () => {
     const note = { id: Date.now(), title: 'New Note', body: '', images: [], createdAt: new Date().toISOString() }
@@ -90,10 +202,7 @@ export function NotesPage() {
   const addImage = (e) => {
     const file = e.target.files[0]
     if (!file) return
-    if ((active?.images || []).length >= 2) {
-      setWarning(true)
-      setTimeout(() => setWarning(false), 4000)
-    }
+    if ((active?.images || []).length >= 2) { setWarning(true); setTimeout(() => setWarning(false), 4000) }
     const reader = new FileReader()
     reader.onload = (ev) => update('images', [...(active?.images || []), ev.target.result])
     reader.readAsDataURL(file)
@@ -109,6 +218,7 @@ export function NotesPage() {
   const fmtDate = (iso) =>
     new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 
+  // ── Note editor ───────────────────────────────────────────────
   if (active) return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
@@ -153,27 +263,37 @@ export function NotesPage() {
         </div>
       )}
 
-      {/* Hint bar */}
+      {/* Format toolbar — only in edit mode */}
       {!preview && (
-        <div style={{ flexShrink: 0, padding: '3px 14px', background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
-          <span style={{ fontSize: '10px', color: 'var(--text-faint)', fontFamily: 'monospace' }}>
-            # h1 &nbsp;## h2 &nbsp;**bold** &nbsp;*italic* &nbsp;- list &nbsp;`code` &nbsp;&gt; quote &nbsp;$$math$$
-          </span>
-        </div>
+        <FormatToolbar
+          bodyId={bodyId}
+          body={active.body}
+          onChange={val => update('body', val)}
+        />
       )}
 
       {/* Body */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
         {preview
           ? <MarkdownPreview content={active.body} />
-          : <textarea value={active.body} onChange={e => update('body', e.target.value)}
-                      placeholder="Start typing… markdown + $$LaTeX$$ supported"
-                      style={{ width: '100%', height: '100%', minHeight: '240px', background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: 'var(--text)', resize: 'none', lineHeight: 1.7, fontFamily: "'Barlow', sans-serif", boxSizing: 'border-box' }} />
+          : <textarea
+              id={bodyId}
+              value={active.body}
+              onChange={e => update('body', e.target.value)}
+              placeholder="Start writing… use the toolbar above or markdown"
+              style={{
+                width: '100%', height: '100%', minHeight: '240px',
+                background: 'transparent', border: 'none', outline: 'none',
+                fontSize: '14px', color: 'var(--text)', resize: 'none',
+                lineHeight: 1.7, fontFamily: "'Barlow', sans-serif", boxSizing: 'border-box',
+              }}
+            />
         }
       </div>
     </div>
   )
 
+  // ── Notes list ────────────────────────────────────────────────
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderBottom: '1px solid var(--border)' }}>
