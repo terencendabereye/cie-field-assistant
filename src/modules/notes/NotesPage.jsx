@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { Plus, Trash2, ChevronLeft, Eye, Edit3, Image, X, AlertTriangle } from 'lucide-react'
 import { marked } from 'marked'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
 
 const STORAGE_KEY = 'cie_notes_v1'
 function loadNotes() {
@@ -11,10 +13,23 @@ function saveNotes(notes) { localStorage.setItem(STORAGE_KEY, JSON.stringify(not
 
 marked.setOptions({ breaks: true, gfm: true })
 
+function renderMath(text) {
+  text = text.replace(/\$\$([^$]+?)\$\$/g, (_, expr) => {
+    try { return katex.renderToString(expr.trim(), { throwOnError: false, displayMode: true }) }
+    catch { return `$$${expr}$$` }
+  })
+  text = text.replace(/\$([^$\n]+?)\$/g, (_, expr) => {
+    try { return katex.renderToString(expr.trim(), { throwOnError: false, displayMode: false }) }
+    catch { return `$${expr}$` }
+  })
+  return text
+}
+
 function MarkdownPreview({ content }) {
-  const html = marked.parse(content || '*No content yet*')
+  const html = marked.parse(renderMath(content || ''))
   return (
-    <div style={{ color: 'var(--text)', fontSize: '14px', lineHeight: 1.7 }}
+    <div className="md-preview"
+         style={{ color: 'var(--text)', fontSize: '14px', lineHeight: 1.7 }}
          dangerouslySetInnerHTML={{ __html: html }} />
   )
 }
@@ -62,26 +77,42 @@ export function NotesPage() {
   }
 
   const update = (field, value) =>
-    setNotes(prev => prev.map(n => n.id === activeId ? { ...n, [field]: value, updatedAt: new Date().toISOString() } : n))
+    setNotes(prev => prev.map(n => n.id === activeId
+      ? { ...n, [field]: value, updatedAt: new Date().toISOString() }
+      : n
+    ))
 
-  const deleteNote = (id) => { setNotes(prev => prev.filter(n => n.id !== id)); if (activeId === id) setActiveId(null) }
+  const deleteNote = (id) => {
+    setNotes(prev => prev.filter(n => n.id !== id))
+    if (activeId === id) setActiveId(null)
+  }
 
   const addImage = (e) => {
     const file = e.target.files[0]
     if (!file) return
-    if ((active?.images || []).length >= 2) { setWarning(true); setTimeout(() => setWarning(false), 4000) }
+    if ((active?.images || []).length >= 2) {
+      setWarning(true)
+      setTimeout(() => setWarning(false), 4000)
+    }
     const reader = new FileReader()
     reader.onload = (ev) => update('images', [...(active?.images || []), ev.target.result])
     reader.readAsDataURL(file)
     e.target.value = ''
   }
 
-  const removeImage = (idx) => { const imgs = [...(active?.images || [])]; imgs.splice(idx, 1); update('images', imgs) }
+  const removeImage = (idx) => {
+    const imgs = [...(active?.images || [])]
+    imgs.splice(idx, 1)
+    update('images', imgs)
+  }
 
-  const fmtDate = (iso) => new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+  const fmtDate = (iso) =>
+    new Date(iso).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
 
   if (active) return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+
+      {/* Header */}
       <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px', borderBottom: '1px solid var(--border)', background: 'var(--bg-light)' }}>
         <button onClick={() => { setActiveId(null); setPreview(false) }}
                 style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-faint)', padding: '2px' }}>
@@ -105,6 +136,7 @@ export function NotesPage() {
         <input ref={fileRef} type="file" accept="image/*" onChange={addImage} style={{ display: 'none' }} />
       </div>
 
+      {/* Storage warning */}
       {warning && (
         <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', gap: '8px', padding: '7px 14px', background: 'rgba(245,158,11,0.1)', borderBottom: '1px solid var(--border)' }}>
           <AlertTriangle size={12} color="var(--amber)" />
@@ -112,6 +144,7 @@ export function NotesPage() {
         </div>
       )}
 
+      {/* Image strip */}
       {(active.images || []).length > 0 && (
         <div style={{ flexShrink: 0, display: 'flex', flexWrap: 'wrap', padding: '8px 12px', borderBottom: '1px solid var(--border)' }}>
           {active.images.map((src, i) => (
@@ -120,19 +153,21 @@ export function NotesPage() {
         </div>
       )}
 
+      {/* Hint bar */}
       {!preview && (
-        <div style={{ flexShrink: 0, padding: '3px 14px', background: 'var(--bg)' }}>
+        <div style={{ flexShrink: 0, padding: '3px 14px', background: 'var(--bg)', borderBottom: '1px solid var(--border)' }}>
           <span style={{ fontSize: '10px', color: 'var(--text-faint)', fontFamily: 'monospace' }}>
-            **bold** &nbsp;*italic* &nbsp;# Heading &nbsp;- list &nbsp;`code` &nbsp;&gt; quote
+            # h1 &nbsp;## h2 &nbsp;**bold** &nbsp;*italic* &nbsp;- list &nbsp;`code` &nbsp;&gt; quote &nbsp;$$math$$
           </span>
         </div>
       )}
 
+      {/* Body */}
       <div style={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '12px 16px' }}>
         {preview
           ? <MarkdownPreview content={active.body} />
           : <textarea value={active.body} onChange={e => update('body', e.target.value)}
-                      placeholder="Start typing… markdown supported"
+                      placeholder="Start typing… markdown + $$LaTeX$$ supported"
                       style={{ width: '100%', height: '100%', minHeight: '240px', background: 'transparent', border: 'none', outline: 'none', fontSize: '14px', color: 'var(--text)', resize: 'none', lineHeight: 1.7, fontFamily: "'Barlow', sans-serif", boxSizing: 'border-box' }} />
         }
       </div>
@@ -164,17 +199,21 @@ export function NotesPage() {
               <p style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: 'var(--text)', flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '8px' }}>
                 {note.title || 'Untitled'}
               </p>
-              <span style={{ fontSize: '10px', color: 'var(--text-faint)', flexShrink: 0 }}>{fmtDate(note.updatedAt || note.createdAt)}</span>
+              <span style={{ fontSize: '10px', color: 'var(--text-faint)', flexShrink: 0 }}>
+                {fmtDate(note.updatedAt || note.createdAt)}
+              </span>
             </div>
             {note.body && (
               <p style={{ margin: '4px 0 0', fontSize: '11px', color: 'var(--text-faint)', lineHeight: 1.5, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                {note.body.replace(/[#*`_~\[\]>]/g, '').slice(0, 120)}
+                {note.body.replace(/[#*`_~\[\]>$]/g, '').slice(0, 120)}
               </p>
             )}
             {(note.images || []).length > 0 && (
               <div style={{ marginTop: '5px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <Image size={10} color="var(--text-faint)" />
-                <span style={{ fontSize: '10px', color: 'var(--text-faint)' }}>{note.images.length} image{note.images.length > 1 ? 's' : ''}</span>
+                <span style={{ fontSize: '10px', color: 'var(--text-faint)' }}>
+                  {note.images.length} image{note.images.length > 1 ? 's' : ''}
+                </span>
               </div>
             )}
           </button>

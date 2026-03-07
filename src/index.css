@@ -44,13 +44,7 @@ html, body {
   transition: background 0.2s, color 0.2s;
 }
 
-body { overscroll-behavior: none; }
-.mono { font-family: 'JetBrains Mono', monospace; }
-
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 2px; }
-
+/* iOS PWA shell — fixed prevents height recalculation on tab switch */
 #root {
   position: fixed;
   top: 0;
@@ -61,3 +55,32 @@ body { overscroll-behavior: none; }
   flex-direction: column;
   background: var(--bg);
 }
+
+body { overscroll-behavior: none; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg-mid); border-radius: 2px; }
+
+/* ── Markdown preview styles ── */
+.md-preview h1 { font-size: 1.5em; font-weight: 700; color: var(--text); margin: 0.8em 0 0.4em; border-bottom: 1px solid var(--border); padding-bottom: 0.2em; }
+.md-preview h2 { font-size: 1.25em; font-weight: 700; color: var(--text); margin: 0.8em 0 0.4em; }
+.md-preview h3 { font-size: 1.1em; font-weight: 600; color: var(--text); margin: 0.6em 0 0.3em; }
+.md-preview h4, .md-preview h5, .md-preview h6 { font-size: 1em; font-weight: 600; color: var(--text-muted); margin: 0.5em 0 0.2em; }
+.md-preview p { margin: 0.5em 0; }
+.md-preview ul { list-style: disc; padding-left: 1.4em; margin: 0.5em 0; }
+.md-preview ol { list-style: decimal; padding-left: 1.4em; margin: 0.5em 0; }
+.md-preview li { margin: 0.2em 0; }
+.md-preview strong { font-weight: 700; color: var(--text); }
+.md-preview em { font-style: italic; color: var(--text-muted); }
+.md-preview code { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; background: var(--bg-mid); color: var(--amber); padding: 0.1em 0.4em; border-radius: 4px; }
+.md-preview pre { background: var(--bg-mid); border-radius: 8px; padding: 10px 14px; overflow-x: auto; margin: 0.6em 0; }
+.md-preview pre code { background: none; padding: 0; color: var(--text); }
+.md-preview blockquote { border-left: 3px solid var(--amber); padding-left: 12px; margin: 0.6em 0; color: var(--text-muted); font-style: italic; }
+.md-preview table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 0.9em; }
+.md-preview th { background: var(--bg-mid); color: var(--text); padding: 6px 10px; border: 1px solid var(--border); font-weight: 600; }
+.md-preview td { padding: 5px 10px; border: 1px solid var(--border); color: var(--text-muted); }
+.md-preview tr:nth-child(even) td { background: rgba(255,255,255,0.03); }
+.md-preview hr { border: none; border-top: 1px solid var(--border); margin: 1em 0; }
+.md-preview a { color: var(--amber); text-decoration: underline; }
